@@ -39,7 +39,17 @@ fn main() {
     io::stdin().read_line(&mut str).expect("error!");
 
 //clocks will run more quickly during free time
-    playfair(string.trim().to_string(), str.trim().to_string());
+    let secret : String = playfair(string.trim().to_string(), str.trim().to_string());
+
+    string.clear();
+    println!("secret: {secret}\nEnter a key word for decryption: ");
+    io::stdin().read_line(&mut string).expect("error!");
+
+    str.clear();
+    println!("Phrase to deccrypt: ");
+    io::stdin().read_line(&mut str).expect("error!");
+
+    please_help_i_wanna_sleep(string.trim().to_string(), str.trim().to_string());
 
 
 }

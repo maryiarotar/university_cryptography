@@ -1,6 +1,6 @@
 
 
-pub(crate) fn playfair(key :String, str :String) {
+pub(crate) fn playfair(key :String, str :String) -> String{
 
     let mut array :[[char; 5]; 5] = [['a';5];5];
     create_alphabet(&key, &mut array);
@@ -11,7 +11,7 @@ pub(crate) fn playfair(key :String, str :String) {
         if ch == ' ' {continue;}
         if ind>0 {
             if *transform_str.get(ind-1).unwrap() == ch && (ind%2==1) {
-                transform_str.push('J');
+                transform_str.push('X');
                 ind += 1;
             }
         }
@@ -19,54 +19,58 @@ pub(crate) fn playfair(key :String, str :String) {
         ind += 1;
     }
     if ind % 2 != 0 {
-        transform_str.push('J');
+        transform_str.push('X');
     }
     let length = ind + 1;
 
     let mut secret_str = String::new();
 
-    'first: for mut bi in 0..length-2 {
+    let mut bi :usize = 0;
 
-        'second: for i in 0..5 {
+    'first: while bi<length-1 {
+
+        for i in 0..5 {
+
             //horizontal match
             if array[i].contains(&transform_str[bi])
-                && array[i].contains(&transform_str[bi+1]){
-                    let pos_bi1 = array[i].
-                        iter().position(|&c| c == transform_str[bi]).expect("err!");
-                    let pos_bi2 = array[i].
-                        iter().position(|&c| c == transform_str[bi+1]).expect("err!");
-                    secret_str.push(array[i][(pos_bi1+1)%5]);
-                    secret_str.push(array[i][(pos_bi2+1)%5]);
-                    bi += 2;
-                    continue 'first;
+                && array[i].contains(&transform_str[bi + 1]) {
+
+                let pos_bi1 = array[i]
+                    .iter().position(|&c| c == transform_str[bi]).expect("err!");
+                let pos_bi2 = array[i]
+                    .iter().position(|&c| c == transform_str[bi + 1]).expect("err!");
+                secret_str.push(array[i][(pos_bi1 + 1) % 5]);
+                secret_str.push(array[i][(pos_bi2 + 1) % 5]);
+                bi += 2;
+                continue 'first;
             }
-            else {
-                //vertical match
-                for j in 0..5 {
-                    if array[j][i] == transform_str[bi] {
-                        let mut k0 = j + 1;
-                        for k in k0..j {
-                            if array[k][i] == transform_str[bi + 1] {
-                                secret_str.push(array[(j + 1) % 5][i]);
-                                secret_str.push(array[(k + 1) % 5][i]);
-                                bi += 2;
-                                continue 'first;
-                            }
+        }
+        for i in 0..5 {
+            //vertical match
+            for j in 0..5 {
+                if array[j][i] == transform_str[bi] {
+                    for k in 0..5 {
+                        if array[k][i] == transform_str[bi + 1] {
+                            secret_str.push(array[(j + 1) % 5][i]);
+                            secret_str.push(array[(k + 1) % 5][i]);
+                            bi += 2;
+                            continue 'first;
                         }
                     }
                 }
-
-         //square chipher
-                if array[i].contains(&transform_str[bi]) {
-                    let ind_bi1 :(usize, usize) = (i, array[i].iter().position(|&c| c == transform_str[bi]).expect("err!"));
-                    for j in 0..5 {
-                        if array[j].contains(&transform_str[bi+1]) {
-                            let ind_bi2 :(usize, usize) = (j, array[j].iter().position(|&c| c == transform_str[bi + 1]).expect("err!"));
-                                secret_str.push(array[ind_bi1.0][ind_bi2.1]);
-                                secret_str.push(array[ind_bi2.0][ind_bi1.1]);
-                                bi += 2;
-                                continue 'first;
-                        }
+            }
+        }
+        //square cipher
+        for i in 0..5 {
+            if array[i].contains(&transform_str[bi]) {
+                let ind_bi1: (usize, usize) = (i, array[i].iter().position(|&c| c == transform_str[bi]).expect("err!"));
+                for j in 0..5 {
+                    if array[j].contains(&transform_str[bi + 1]) {
+                        let ind_bi2: (usize, usize) = (j, array[j].iter().position(|&c| c == transform_str[bi + 1]).expect("err!"));
+                        secret_str.push(array[ind_bi1.0][ind_bi2.1]);
+                        secret_str.push(array[ind_bi2.0][ind_bi1.1]);
+                        bi += 2;
+                        continue 'first;
                     }
                 }
             }
@@ -75,15 +79,93 @@ pub(crate) fn playfair(key :String, str :String) {
         bi += 2;
     }
 
-
-println!(" {:?}", transform_str);
-    println!(" {:?}", secret_str);
+    check_this(&transform_str.iter().collect());
+    check_this(&secret_str);
     for i in 0..5 {
         println!("{:?}", array[i]);
     }
 
+    return secret_str;
 }
 
+//decryption
+pub(crate) fn please_help_i_wanna_sleep(key :String, str :String) -> String{
+
+    let mut array :[[char; 5]; 5] = [['a';5];5];
+    create_alphabet(&key, &mut array);
+    let mut transform_str :Vec<char> = str.chars().collect();
+
+    let mut orig_str = String::new();
+
+    let mut bi :usize = 0;
+
+    'first: while bi< str.len()-1 {
+
+        for i in 0..5 {
+
+            //horizontal match
+            if array[i].contains(&transform_str[bi])
+                && array[i].contains(&transform_str[bi + 1]) {
+
+                let pos_bi1 = array[i]
+                    .iter().position(|&c| c == transform_str[bi]).expect("err!");
+                let pos_bi2 = array[i]
+                    .iter().position(|&c| c == transform_str[bi + 1]).expect("err!");
+                orig_str.push(array[i][(pos_bi1+5 - 1) % 5]);
+                orig_str.push(array[i][(pos_bi2+5 - 1) % 5]);
+                bi += 2;
+                continue 'first;
+            }
+        }
+        for i in 0..5 {
+            //vertical match
+            for j in 0..5 {
+                if array[j][i] == transform_str[bi] {
+                    for k in 0..5 {
+                        if array[k][i] == transform_str[bi + 1] {
+                            orig_str.push(array[(j+5 - 1) % 5][i]);
+                            orig_str.push(array[(k+5 - 1) % 5][i]);
+                            bi += 2;
+                            continue 'first;
+                        }
+                    }
+                }
+            }
+        }
+        //square chipher
+        for i in 0..5 {
+            if array[i].contains(&transform_str[bi]) {
+                let ind_bi1: (usize, usize) = (i, array[i].iter().position(|&c| c == transform_str[bi]).expect("err!"));
+                for j in 0..5 {
+                    if array[j].contains(&transform_str[bi + 1]) {
+                        let ind_bi2: (usize, usize) = (j, array[j].iter().position(|&c| c == transform_str[bi + 1]).expect("err!"));
+                        orig_str.push(array[ind_bi1.0][ind_bi2.1]);
+                        orig_str.push(array[ind_bi2.0][ind_bi1.1]);
+                        bi += 2;
+                        continue 'first;
+                    }
+                }
+            }
+        }
+        bi += 2;
+    }
+    check_this(&orig_str);
+
+    return orig_str;
+}
+
+
+fn check_this(str :&String) {
+        let mut ii :usize = 1;
+    for i in str.chars() {
+        print!("{}",i);
+        if ii%2==0 {
+            print!(" ");
+        }
+        ii += 1;
+    }
+    println!();
+}
 
 fn create_alphabet(str :&String, array :&mut [[char; 5]; 5]) {
     let mut ALPHABET :Vec<char> = vec![

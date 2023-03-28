@@ -37,7 +37,6 @@ pub(crate) fn caesar_to_original(key :i32, str :String) -> String {
         chipher_str.push(ALPHABET[ind_chipher]);
     }
     chipher_str
-
 }
 
 

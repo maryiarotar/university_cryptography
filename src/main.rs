@@ -5,10 +5,51 @@ use playfair::*;
 
 mod caesar_cipher;
 mod playfair;
+mod salsa20;
 
 fn main() {
+
+
+    //SALSA20 with 10 rounds of transformation
+    
+    let my_str = "Roses are lovely flowers with a 
+    sweet scent that has captivated people for centuries.
+    И ещё немного кириллицы для проверки!";
+    
+
+    println!("_______ENCRYPTING________");
+    
+    let secret_byte_stream = salsa20::encrypt(my_str);
+    println!("{:?}", secret_byte_stream);
+
+    println!("_______DECRYPTING________");
+
+    let decripted_text = salsa20::decrypt(secret_byte_stream);
+    println!("{}", decripted_text);
+
+//-------------------------------------------
+    salsa20::set_key("newkeyforsalsa20nobodycandecrypt");
+    salsa20::set_nonce("ABCDEFGH");
+
+    let mut text = String::new();
+    println!("enter your text -> ");
+    io::stdin().read_line(&mut text).expect("stdin error!");
+
+    println!("_______ENCRYPTING________");
+    
+    let secret_byte_stream = salsa20::encrypt(&text);
+    println!("{:?}", secret_byte_stream);
+
+    println!("_______DECRYPTING________");
+
+    let decripted_text = salsa20::decrypt(secret_byte_stream);
+    println!("{}", decripted_text);
+
+
+
+    /* //CAESAR
     let mut string = String :: new();
-/*
+
     let key :i32 = in_and_parse_num();
     print!("your key is {}. Enter a word to hide: ", key);
     io::stdout().flush().expect("an error..");
@@ -28,7 +69,9 @@ fn main() {
 
     // print two alphabets to check:
     print_alphabets(key);
+
 */
+/* //PLAYFAIR
     println!("\n--------------------------------------------------------------");
     string.clear();
     println!("Enter a key word for Playfair: ");
@@ -50,6 +93,6 @@ fn main() {
     io::stdin().read_line(&mut str).expect("error!");
 
     please_help_i_wanna_sleep(string.trim().to_string(), str.trim().to_string());
-
+*/
 
 }
